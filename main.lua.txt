@@ -1,0 +1,121 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Spe Hub Panel",
+   Icon = "flame",
+   LoadingTitle = "Spe Hub Private Build",
+   LoadingSubtitle = "by @67diedd",
+   ShowText = "SPE HUB",
+   Theme = "AmberGlow", -- este si existe y funciona, se ve oscuro/pro
+
+   ToggleUIKeybind = "K",
+
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Spe hub"
+   },
+
+   Discord = {
+      Enabled = true,
+      Invite = "KE5mMXJMz",
+      RememberJoins = true
+   },
+
+   KeySystem = true,
+   KeySettings = {
+      Title = "Spe Hub Authentication",
+      Subtitle = "Private Access Only",
+      Note = "DM @67diedd to purchase your key",
+      FileName = "Spehubkeysytem",
+      SaveKey = true,
+      GrabKeyFromSite = true,
+      Key = {"https://pastebin.com/raw/KSfSr0Vv"}
+   }
+})
+
+local MainTab = Window:CreateTab("🏠 Home", nil) local CombatTab = Window:CreateTab("⚔ Combat", nil) local VisualTab = Window:CreateTab("👁 Visuals", nil) local MiscTab = Window:CreateTab("🎲 Misc", nil) local MacroTab = Window:CreateTab("⚡ Macro", nil)
+
+local HomeSection = MainTab:CreateSection("System") local CombatSection = CombatTab:CreateSection("Combat") local VisualSection = VisualTab:CreateSection("ESP") local MiscSection = MiscTab:CreateSection("Player") local MacroSection = MacroTab:CreateSection("Macro Combo")
+
+local Players = game:GetService("Players") local LocalPlayer = Players.LocalPlayer local UIS = game:GetService("UserInputService") local RS = game:GetService("RunService") local TPService = game:GetService("TeleportService") local Camera = workspace.CurrentCamera local VirtualUser = game:GetService("VirtualUser")
+
+getgenv().FOVRadius = 120 getgenv().Hitbox = false getgenv().HitboxSize = 8 getgenv().HitboxTransparency = 0.5 getgenv().ESPOutline = false getgenv().ESPName = false getgenv().TracerESP = false getgenv().InfiniteJump = false getgenv().MacroEnabled = false getgenv().MacroDelay = 0.3 getgenv().MacroSlots = {"","","",""}
+
+Rayfield:Notify({ Title = "Spe Hub Loaded", Content = "Optimized Build For Delta/Xeno", Duration = 6, Image = 13047715178, })
+
+MainTab:CreateButton({ Name = "Rejoin Same Server", Callback = function() TPService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer) end, })
+
+MainTab:CreateButton({ Name = "Anti AFK", Callback = function() LocalPlayer.Idled:Connect(function() VirtualUser:CaptureController() VirtualUser:ClickButton2(Vector2.new()) end) Rayfield:Notify({Title="Anti AFK",Content="Enabled",Duration=3}) end, })
+
+local ExecutorName = identifyexecutor and identifyexecutor() or "Unknown" MainTab:CreateParagraph({Title = "Executor Detected", Content = ExecutorName})
+
+local FOVCircle
+
+task.spawn(function() while task.wait(0.35) do if getgenv().Hitbox then for _,v in ipairs(Players:GetPlayers()) do if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then local hrp = v.Character.HumanoidRootPart hrp.Size = Vector3.new(getgenv().HitboxSize,getgenv().HitboxSize,getgenv().HitboxSize) hrp.Transparency = getgenv().HitboxTransparency hrp.Material = Enum.Material.Neon hrp.BrickColor = BrickColor.new("Really red") hrp.CanCollide = false end end end end end)
+
+local Tracers = {} local function ApplyESP(plr) if plr == LocalPlayer then return end local Char = plr.Character if not Char or not Char:FindFirstChild("Head") then return end
+
+if getgenv().ESPName then
+    if not Char.Head:FindFirstChild("NameEsp") then
+        local bill = Instance.new("BillboardGui", Char.Head)
+        bill.Name = "NameEsp"
+        bill.Size = UDim2.new(0,100,0,20)
+        bill.AlwaysOnTop = true
+        bill.StudsOffset = Vector3.new(0,1.5,0)
+
+        local txt = Instance.new("TextLabel", bill)
+        txt.Size = UDim2.new(1,0,1,0)
+        txt.BackgroundTransparency = 1
+        txt.Text = plr.Name
+        txt.TextScaled = true
+        txt.TextStrokeTransparency = 0.4
+        txt.TextColor3 = Color3.fromRGB(255,0,0)
+    end
+else
+    if Char.Head:FindFirstChild("NameEsp") then Char.Head.NameEsp:Destroy() end
+end
+
+if getgenv().ESPOutline then
+    if not Char:FindFirstChild("Highlight") then
+        local h = Instance.new("Highlight", Char)
+        h.FillTransparency = 1
+        h.OutlineColor = Color3.fromRGB(255,0,0)
+        h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+    end
+else
+    if Char:FindFirstChild("Highlight") then Char.Highlight:Destroy() end
+end
+
+end
+
+task.spawn(function() while task.wait(1) do for _,v in ipairs(Players:GetPlayers()) do ApplyESP(v) end end end)
+
+CombatTab:CreateSlider({Name="Aimbot Range",Range={50,500},Increment=5,CurrentValue=120,Callback=function(v)getgenv().FOVRadius=v end})
+
+getgenv().CameraFovValue = 70 MiscTab:CreateSlider({ Name = "Camera FOV", Range = {0,120}, Increment = 1, CurrentValue = 70, Callback = function(v) getgenv().CameraFovValue = v workspace.CurrentCamera.FieldOfView = v end, })
+
+LocalPlayer.CharacterAdded:Connect(function() task.wait(1) workspace.CurrentCamera.FieldOfView = getgenv().CameraFovValue end) CombatTab:CreateToggle({Name="Hitbox Expander",CurrentValue=false,Callback=function(v)getgenv().Hitbox=v end}) CombatTab:CreateSlider({Name="Hitbox Size",Range={2,20},Increment=1,CurrentValue=8,Callback=function(v)getgenv().HitboxSize=v end}) CombatTab:CreateSlider({Name="Hitbox Transparency",Range={0,10},Increment=1,CurrentValue=5,Callback=function(v)getgenv().HitboxTransparency=v/10 end})
+
+VisualTab:CreateToggle({Name="ESP Outline",CurrentValue=false,Callback=function(v)getgenv().ESPOutline=v end}) VisualTab:CreateToggle({Name="ESP Name",CurrentValue=false,Callback=function(v)getgenv().ESPName=v end})
+
+MiscTab:CreateButton({ Name = "Infinite Jump Toggle", Callback = function() getgenv().InfiniteJump = not getgenv().InfiniteJump end, })
+
+UIS.JumpRequest:Connect(function() if getgenv().InfiniteJump then local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") if hum then hum:ChangeState("Jumping") end end end)
+
+MiscTab:CreateSlider({ Name = "WalkSpeed", Range = {16,150}, Increment = 1, CurrentValue = 16, Callback = function(v) local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") if hum then hum.WalkSpeed = v end end, })
+
+MiscTab:CreateSlider({ Name = "JumpPower", Range = {50,200}, Increment = 1, CurrentValue = 50, Callback = function(v) local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") if hum then hum.JumpPower = v end end, })
+
+MacroSection:CreateSlider({Name="Sequence Slot 1",Range={1,10},Increment=1,CurrentValue=1,Callback=function(v)getgenv().MacroSlots[1]=v end}) MacroSection:CreateSlider({Name="Sequence Slot 2",Range={1,10},Increment=1,CurrentValue=2,Callback=function(v)getgenv().MacroSlots[2]=v end}) MacroSection:CreateSlider({Name="Sequence Slot 3",Range={1,10},Increment=1,CurrentValue=3,Callback=function(v)getgenv().MacroSlots[3]=v end}) MacroSection:CreateSlider({Name="Sequence Slot 4",Range={1,10},Increment=1,CurrentValue=4,Callback=function(v)getgenv().MacroSlots[4]=v end})
+
+MacroSection:CreateSlider({Name="Action Delay",Range={1,20},Increment=1,CurrentValue=3,Callback=function(v)getgenv().MacroDelay=v/100 end})
+
+local parentGui = (gethui and gethui()) or game.CoreGui local gui = Instance.new("ScreenGui", parentGui) gui.Name = "SpeMacroButton"
+
+local btn = Instance.new("TextButton", gui) btn.Size = UDim2.new(0,60,0,60) btn.Position = UDim2.new(0.8,0,0.7,0) btn.BackgroundColor3 = Color3.fromRGB(120,0,0) btn.Text = "MACRO" btn.TextColor3 = Color3.new(1,1,1) btn.TextScaled = true btn.Active = true btn.Draggable = true btn.BorderSizePixel = 0 Instance.new("UICorner", btn).CornerRadius = UDim.new(1,0)
+
+btn.MouseButton1Click:Connect(function() for _,slot in ipairs(getgenv().MacroSlots) do if slot and slot > 0 then local tool = LocalPlayer.Backpack:GetChildren()[slot] or (LocalPlayer.Character and LocalPlayer.Character:GetChildren()[slot]) if tool and tool:IsA("Tool") and LocalPlayer.Character then LocalPlayer.Character.Humanoid:EquipTool(tool) task.wait(getgenv().MacroDelay) tool:Activate() task.wait(getgenv().MacroDelay) end end end end)
