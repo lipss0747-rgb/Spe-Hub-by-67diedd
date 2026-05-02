@@ -146,7 +146,7 @@ CombatTab:CreateSlider({Name="Aimbot Range (FOV)",Range={50,500},Increment=5,Cur
 task.spawn(function()
     while task.wait(0.25) do
         for _,v in ipairs(Players:GetPlayers()) do
-            if v \~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+            if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
                 local hrp = v.Character.HumanoidRootPart
                 
                 if getgenv().Hitbox then
