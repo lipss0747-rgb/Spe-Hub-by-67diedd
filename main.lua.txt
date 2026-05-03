@@ -54,7 +54,11 @@ local RS = game:GetService("RunService")
 local TPService = game:GetService("TeleportService") 
 local Camera = workspace.CurrentCamera 
 local VirtualUser = game:GetService("VirtualUser")
-local Lighting = game:GetService("Lighting")
+if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+    Lighting.SPE_LOCKED_SKY:Destroy()
+end
+
+getgenv().CurrentSkyName = nil
 
 local SkyData = {
     ["Crimson Doom"] = {
@@ -107,48 +111,72 @@ local SkyData = {
 }
 
 local function ApplySkybox(name)
-    local D = SkyData[name]
-    if not D then return end
+    local success, err = pcall(function()
+        local D = SkyData[name]
+        if not D or not D.Sky then return end
 
-    getgenv().CurrentSkyName = name
+        getgenv().CurrentSkyName = name
 
-    local s = GetLockedSky()
-    s.SkyboxBk = D.Sky.Bk
-    s.SkyboxDn = D.Sky.Dn
-    s.SkyboxFt = D.Sky.Ft
-    s.SkyboxLf = D.Sky.Lf
-    s.SkyboxRt = D.Sky.Rt
-    s.SkyboxUp = D.Sky.Up
-
-    Lighting.Ambient = D.Ambient
-    Lighting.OutdoorAmbient = D.OutdoorAmbient
-    Lighting.Brightness = D.Brightness
-    Lighting.ClockTime = D.ClockTime
-    Lighting.FogEnd = D.FogEnd
-end
-
-RS.RenderStepped:Connect(function()
-    if getgenv().CurrentSkyName then
-        RemoveSkyEffects()
-
-        local D = SkyData[getgenv().CurrentSkyName]
         local s = GetLockedSky()
-
-        if s.SkyboxBk ~= D.Sky.Bk then
-            s.SkyboxBk = D.Sky.Bk
-            s.SkyboxDn = D.Sky.Dn
-            s.SkyboxFt = D.Sky.Ft
-            s.SkyboxLf = D.Sky.Lf
-            s.SkyboxRt = D.Sky.Rt
-            s.SkyboxUp = D.Sky.Up
-        end
+        s.SkyboxBk = D.Sky.Bk
+        s.SkyboxDn = D.Sky.Dn
+        s.SkyboxFt = D.Sky.Ft
+        s.SkyboxLf = D.Sky.Lf
+        s.SkyboxRt = D.Sky.Rt
+        s.SkyboxUp = D.Sky.Up
 
         Lighting.Ambient = D.Ambient
         Lighting.OutdoorAmbient = D.OutdoorAmbient
         Lighting.Brightness = D.Brightness
         Lighting.ClockTime = D.ClockTime
         Lighting.FogEnd = D.FogEnd
+    end)
+
+    if not success then
+        warn("Sky Error:", err)
     end
+end
+
+local function DisableSkybox()
+    getgenv().CurrentSkyName = nil
+
+    if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+        Lighting.SPE_LOCKED_SKY:Destroy()
+    end
+
+    Lighting.Ambient = Color3.fromRGB(128,128,128)
+    Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 100000
+end
+
+RS.RenderStepped:Connect(function()
+    pcall(function()
+        if getgenv().CurrentSkyName then
+            RemoveSkyEffects()
+
+            local D = SkyData[getgenv().CurrentSkyName]
+            if not D or not D.Sky then return end
+
+            local s = GetLockedSky()
+
+            if s.SkyboxBk ~= D.Sky.Bk then
+                s.SkyboxBk = D.Sky.Bk
+                s.SkyboxDn = D.Sky.Dn
+                s.SkyboxFt = D.Sky.Ft
+                s.SkyboxLf = D.Sky.Lf
+                s.SkyboxRt = D.Sky.Rt
+                s.SkyboxUp = D.Sky.Up
+            end
+
+            Lighting.Ambient = D.Ambient
+            Lighting.OutdoorAmbient = D.OutdoorAmbient
+            Lighting.Brightness = D.Brightness
+            Lighting.ClockTime = D.ClockTime
+            Lighting.FogEnd = D.FogEnd
+        end
+    end)
 end)
 
 getgenv().FOVRadius = 120 
