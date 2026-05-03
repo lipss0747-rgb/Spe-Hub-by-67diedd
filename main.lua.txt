@@ -56,150 +56,6 @@ local Camera = workspace.CurrentCamera
 local VirtualUser = game:GetService("VirtualUser")
 local Lighting = game:GetService("Lighting")
 
-getgenv().CurrentSkyName = nil
-
-local function GetLockedSky()
-    local s = Lighting:FindFirstChild("SPE_LOCKED_SKY")
-    if not s then
-        for _,v in pairs(Lighting:GetChildren()) do
-            if v:IsA("Sky") then
-                v:Destroy()
-            end
-        end
-        s = Instance.new("Sky")
-        s.Name = "SPE_LOCKED_SKY"
-        s.Parent = Lighting
-    end
-    return s
-end
-
-local function RemoveSkyEffects()
-    for _,v in pairs(Lighting:GetChildren()) do
-        if v:IsA("Atmosphere") or v:IsA("Clouds") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") then
-            v:Destroy()
-        end
-    end
-end
-
-local SkyData = {
-    ["Crimson Doom"] = {
-        Sky = {
-            Bk="rbxassetid://271042516",Dn="rbxassetid://271077243",Ft="rbxassetid://271042556",
-            Lf="rbxassetid://271042310",Rt="rbxassetid://271042467",Up="rbxassetid://271077958"
-        },
-        Ambient = Color3.fromRGB(120,20,20),
-        OutdoorAmbient = Color3.fromRGB(90,10,10),
-        Brightness = 1.2,
-        ClockTime = 18,
-        FogEnd = 100000
-    },
-
-    ["Deep Space"] = {
-        Sky = {
-            Bk="rbxassetid://149397692",Dn="rbxassetid://149397686",Ft="rbxassetid://149397697",
-            Lf="rbxassetid://149397684",Rt="rbxassetid://149397688",Up="rbxassetid://149397702"
-        },
-        Ambient = Color3.fromRGB(15,15,45),
-        OutdoorAmbient = Color3.fromRGB(10,10,35),
-        Brightness = 0.8,
-        ClockTime = 0,
-        FogEnd = 100000
-    },
-
-    ["Violet Galaxy"] = {
-        Sky = {
-            Bk="rbxassetid://159454299",Dn="rbxassetid://159454296",Ft="rbxassetid://159454293",
-            Lf="rbxassetid://159454286",Rt="rbxassetid://159454300",Up="rbxassetid://159454288"
-        },
-        Ambient = Color3.fromRGB(70,20,100),
-        OutdoorAmbient = Color3.fromRGB(55,10,80),
-        Brightness = 1,
-        ClockTime = 20,
-        FogEnd = 100000
-    },
-
-    ["Dark Storm"] = {
-        Sky = {
-            Bk="rbxassetid://159248188",Dn="rbxassetid://159248183",Ft="rbxassetid://159248187",
-            Lf="rbxassetid://159248173",Rt="rbxassetid://159248192",Up="rbxassetid://159248176"
-        },
-        Ambient = Color3.fromRGB(35,35,35),
-        OutdoorAmbient = Color3.fromRGB(20,20,20),
-        Brightness = 0.6,
-        ClockTime = 22,
-        FogEnd = 100000
-    }
-}
-
-local function ApplySkybox(name)
-    local success, err = pcall(function()
-        local D = SkyData[name]
-        if not D or not D.Sky then return end
-
-        getgenv().CurrentSkyName = name
-
-        local s = GetLockedSky()
-        s.SkyboxBk = D.Sky.Bk
-        s.SkyboxDn = D.Sky.Dn
-        s.SkyboxFt = D.Sky.Ft
-        s.SkyboxLf = D.Sky.Lf
-        s.SkyboxRt = D.Sky.Rt
-        s.SkyboxUp = D.Sky.Up
-
-        Lighting.Ambient = D.Ambient
-        Lighting.OutdoorAmbient = D.OutdoorAmbient
-        Lighting.Brightness = D.Brightness
-        Lighting.ClockTime = D.ClockTime
-        Lighting.FogEnd = D.FogEnd
-    end)
-
-    if not success then
-        warn("Sky Error:", err)
-    end
-end
-
-local function DisableSkybox()
-    getgenv().CurrentSkyName = nil
-
-    if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
-        Lighting.SPE_LOCKED_SKY:Destroy()
-    end
-
-    Lighting.Ambient = Color3.fromRGB(128,128,128)
-    Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
-    Lighting.Brightness = 2
-    Lighting.ClockTime = 14
-    Lighting.FogEnd = 100000
-end
-
-RS.RenderStepped:Connect(function()
-    pcall(function()
-        if getgenv().CurrentSkyName then
-            RemoveSkyEffects()
-
-            local D = SkyData[getgenv().CurrentSkyName]
-            if not D or not D.Sky then return end
-
-            local s = GetLockedSky()
-
-            if s.SkyboxBk ~= D.Sky.Bk then
-                s.SkyboxBk = D.Sky.Bk
-                s.SkyboxDn = D.Sky.Dn
-                s.SkyboxFt = D.Sky.Ft
-                s.SkyboxLf = D.Sky.Lf
-                s.SkyboxRt = D.Sky.Rt
-                s.SkyboxUp = D.Sky.Up
-            end
-
-            Lighting.Ambient = D.Ambient
-            Lighting.OutdoorAmbient = D.OutdoorAmbient
-            Lighting.Brightness = D.Brightness
-            Lighting.ClockTime = D.ClockTime
-            Lighting.FogEnd = D.FogEnd
-        end
-    end)
-end)
-
 getgenv().FOVRadius = 120 
 getgenv().Hitbox = false 
 getgenv().HitboxSize = 8 
@@ -368,6 +224,152 @@ task.spawn(function()
             ApplyESP(v) 
         end 
     end 
+end)
+
+--// ================= SKY CHANGER SYSTEM ================= //
+
+if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+    Lighting.SPE_LOCKED_SKY:Destroy()
+end
+
+getgenv().CurrentSkyName = nil
+
+local SkyData = {
+    ["Crimson Doom"] = {
+        Sky = {
+            Bk="rbxassetid://271042516",Dn="rbxassetid://271077243",Ft="rbxassetid://271042556",
+            Lf="rbxassetid://271042310",Rt="rbxassetid://271042467",Up="rbxassetid://271077958"
+        },
+        Ambient = Color3.fromRGB(120,20,20),
+        OutdoorAmbient = Color3.fromRGB(90,10,10),
+        Brightness = 1.2,
+        ClockTime = 18,
+        FogEnd = 100000
+    },
+
+    ["Deep Space"] = {
+        Sky = {
+            Bk="rbxassetid://149397692",Dn="rbxassetid://149397686",Ft="rbxassetid://149397697",
+            Lf="rbxassetid://149397684",Rt="rbxassetid://149397688",Up="rbxassetid://149397702"
+        },
+        Ambient = Color3.fromRGB(15,15,45),
+        OutdoorAmbient = Color3.fromRGB(10,10,35),
+        Brightness = 0.8,
+        ClockTime = 0,
+        FogEnd = 100000
+    },
+
+    ["Violet Galaxy"] = {
+        Sky = {
+            Bk="rbxassetid://159454299",Dn="rbxassetid://159454296",Ft="rbxassetid://159454293",
+            Lf="rbxassetid://159454286",Rt="rbxassetid://159454300",Up="rbxassetid://159454288"
+        },
+        Ambient = Color3.fromRGB(70,20,100),
+        OutdoorAmbient = Color3.fromRGB(55,10,80),
+        Brightness = 1,
+        ClockTime = 20,
+        FogEnd = 100000
+    },
+
+    ["Dark Storm"] = {
+        Sky = {
+            Bk="rbxassetid://159248188",Dn="rbxassetid://159248183",Ft="rbxassetid://159248187",
+            Lf="rbxassetid://159248173",Rt="rbxassetid://159248192",Up="rbxassetid://159248176"
+        },
+        Ambient = Color3.fromRGB(35,35,35),
+        OutdoorAmbient = Color3.fromRGB(20,20,20),
+        Brightness = 0.6,
+        ClockTime = 22,
+        FogEnd = 100000
+    }
+}
+
+local function GetLockedSky()
+    local s = Lighting:FindFirstChild("SPE_LOCKED_SKY")
+    if not s then
+        for _,v in pairs(Lighting:GetChildren()) do
+            if v:IsA("Sky") then
+                v:Destroy()
+            end
+        end
+        s = Instance.new("Sky")
+        s.Name = "SPE_LOCKED_SKY"
+        s.Parent = Lighting
+    end
+    return s
+end
+
+local function RemoveSkyEffects()
+    for _,v in pairs(Lighting:GetChildren()) do
+        if v:IsA("Atmosphere") or v:IsA("Clouds") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") then
+            v:Destroy()
+        end
+    end
+end
+
+local function ApplySkybox(name)
+    local D = SkyData[name]
+    if not D then return end
+
+    getgenv().CurrentSkyName = name
+
+    local s = GetLockedSky()
+    s.SkyboxBk = D.Sky.Bk
+    s.SkyboxDn = D.Sky.Dn
+    s.SkyboxFt = D.Sky.Ft
+    s.SkyboxLf = D.Sky.Lf
+    s.SkyboxRt = D.Sky.Rt
+    s.SkyboxUp = D.Sky.Up
+
+    Lighting.Ambient = D.Ambient
+    Lighting.OutdoorAmbient = D.OutdoorAmbient
+    Lighting.Brightness = D.Brightness
+    Lighting.ClockTime = D.ClockTime
+    Lighting.FogEnd = D.FogEnd
+end
+
+local function DisableSkybox()
+    getgenv().CurrentSkyName = nil
+
+    if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+        Lighting.SPE_LOCKED_SKY:Destroy()
+    end
+
+    Lighting.Ambient = Color3.fromRGB(128,128,128)
+    Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 100000
+end
+
+task.spawn(function()
+    while task.wait(0.3) do
+        pcall(function()
+            if getgenv().CurrentSkyName then
+                RemoveSkyEffects()
+
+                local D = SkyData[getgenv().CurrentSkyName]
+                if not D then return end
+
+                local s = GetLockedSky()
+
+                if s.SkyboxBk ~= D.Sky.Bk then
+                    s.SkyboxBk = D.Sky.Bk
+                    s.SkyboxDn = D.Sky.Dn
+                    s.SkyboxFt = D.Sky.Ft
+                    s.SkyboxLf = D.Sky.Lf
+                    s.SkyboxRt = D.Sky.Rt
+                    s.SkyboxUp = D.Sky.Up
+                end
+
+                Lighting.Ambient = D.Ambient
+                Lighting.OutdoorAmbient = D.OutdoorAmbient
+                Lighting.Brightness = D.Brightness
+                Lighting.ClockTime = D.ClockTime
+                Lighting.FogEnd = D.FogEnd
+            end
+        end)
+    end
 end)
 
 -- ==================== MISC ====================
