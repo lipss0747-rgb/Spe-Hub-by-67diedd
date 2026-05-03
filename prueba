@@ -1,0 +1,446 @@
+local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
+
+local Window = Rayfield:CreateWindow({
+   Name = "Spe Hub Panel",
+   Icon = "flame",
+   LoadingTitle = "Spe Hub Private Build",
+   LoadingSubtitle = "by @67diedd",
+   ShowText = "SPE HUB",
+   Theme = "AmberGlow",
+
+   ToggleUIKeybind = "K",
+
+   DisableRayfieldPrompts = true,
+   DisableBuildWarnings = true,
+
+   ConfigurationSaving = {
+      Enabled = true,
+      FolderName = nil,
+      FileName = "Spe hub"
+   },
+
+   Discord = {
+      Enabled = true,
+      Invite = "KE5mMXJMz",
+      RememberJoins = true
+   },
+
+   KeySystem = true,
+   KeySettings = {
+      Title = "Spe Hub Authentication",
+      Subtitle = "Private Access Only",
+      Note = "DM @67diedd to purchase your key",
+      FileName = "Spehubkeysytem",
+      SaveKey = true,
+      GrabKeyFromSite = true,
+      Key = {"https://pastebin.com/raw/xzxJhnNs"}
+   }
+})
+
+local MainTab = Window:CreateTab("🏠 Home", nil) 
+local CombatTab = Window:CreateTab("⚔ Combat", nil) 
+local VisualTab = Window:CreateTab("👁 Visuals", nil) 
+local MiscTab = Window:CreateTab("🎲 Misc", nil) 
+
+local HomeSection = MainTab:CreateSection("System")
+local CombatSection = CombatTab:CreateSection("Combat") 
+local VisualSection = VisualTab:CreateSection("ESP") 
+local MiscSection = MiscTab:CreateSection("Player") 
+
+local Players = game:GetService("Players") 
+local LocalPlayer = Players.LocalPlayer 
+local UIS = game:GetService("UserInputService") 
+local RS = game:GetService("RunService") 
+local TPService = game:GetService("TeleportService") 
+local Camera = workspace.CurrentCamera 
+local VirtualUser = game:GetService("VirtualUser")
+local Lighting = game:GetService("Lighting")
+
+getgenv().FOVRadius = 120 
+getgenv().Hitbox = false 
+getgenv().HitboxSize = 8 
+getgenv().HitboxTransparency = 0.5 
+getgenv().ESPOutline = false 
+getgenv().ESPName = false 
+getgenv().InfiniteJump = false 
+
+-- ==================== CODIGO QUE PEDISTE PONER AQUÍ ====================
+Rayfield:Notify({ Title = "Spe Hub Loaded", Content = "Optimized Build For Delta/Xeno", Duration = 6, Image = 13047715178, })
+
+MainTab:CreateButton({ Name = "Rejoin Same Server", Callback = function() TPService:TeleportToPlaceInstance(game.PlaceId, game.JobId, LocalPlayer) end, })
+
+MainTab:CreateButton({ Name = "Anti AFK", Callback = function() LocalPlayer.Idled:Connect(function() VirtualUser:CaptureController() VirtualUser:ClickButton2(Vector2.new()) end) Rayfield:Notify({Title="Anti AFK",Content="Enabled",Duration=3}) end, })
+
+local ExecutorName = identifyexecutor and identifyexecutor() or "Unknown" 
+MainTab:CreateParagraph({Title = "Executor Detected", Content = ExecutorName})
+-- =====================================================================
+
+-- ==================== HOME STATUS ====================
+MainTab:CreateParagraph({
+    Title = "Spe Hub Status",
+    Content = "Premium Build Loaded Successfully"
+})
+
+-- ==================== AIMLOCK ====================
+getgenv().AimlockEnabled = false
+
+local RunService = game:GetService("RunService")
+
+local function GetClosestPlayer()
+    local closest = nil
+    local shortestDistance = math.huge
+
+    local myChar = LocalPlayer.Character
+    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return nil end
+
+    local myPos = myChar.HumanoidRootPart.Position
+
+    for _, v in ipairs(Players:GetPlayers()) do
+        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") then
+            local head = v.Character.Head
+            local dist = (head.Position - myPos).Magnitude
+
+            if dist < shortestDistance then
+                shortestDistance = dist
+                closest = head
+            end
+        end
+    end
+
+    return closest
+end
+
+RunService.RenderStepped:Connect(function()
+    if not getgenv().AimlockEnabled then return end
+
+    local targetHead = GetClosestPlayer()
+
+    if targetHead then
+        local direction = (targetHead.Position - Camera.CFrame.Position).Unit
+        local targetCFrame = CFrame.lookAt(Camera.CFrame.Position, Camera.CFrame.Position + direction)
+
+        Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, 0.45)
+    end
+end)
+
+-- ==================== COMBAT ====================
+
+CombatTab:CreateToggle({Name="Aimlock Enabled",CurrentValue=false,Callback=function(v)
+    getgenv().AimlockEnabled = v
+    Rayfield:Notify({
+        Title = "Aimlock",
+        Content = v and "✅ Activado" or "❌ Desactivado",
+        Duration = 2
+    })
+end})
+
+CombatTab:CreateToggle({Name="Hitbox Expander",CurrentValue=false,Callback=function(v)
+    getgenv().Hitbox = v 
+end})
+
+CombatTab:CreateSlider({Name="Hitbox Size",Range={2,20},Increment=1,CurrentValue=8,Callback=function(v)getgenv().HitboxSize=v end})
+CombatTab:CreateSlider({Name="Hitbox Transparency",Range={0,10},Increment=1,CurrentValue=5,Callback=function(v)getgenv().HitboxTransparency=v/10 end})
+
+CombatTab:CreateSlider({Name="Aimbot Range (FOV)",Range={50,500},Increment=5,CurrentValue=120,Callback=function(v)getgenv().FOVRadius=v end})
+
+-- ==================== HITBOX CORREGIDO ====================
+task.spawn(function()
+    while task.wait(0.25) do
+        for _,v in ipairs(Players:GetPlayers()) do
+            if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
+                local hrp = v.Character.HumanoidRootPart
+                
+                if getgenv().Hitbox then
+                    hrp.Size = Vector3.new(getgenv().HitboxSize, getgenv().HitboxSize, getgenv().HitboxSize)
+                    hrp.Transparency = getgenv().HitboxTransparency
+                    hrp.Material = Enum.Material.Neon
+                    hrp.BrickColor = BrickColor.new("Really red")
+                    hrp.CanCollide = false
+                else
+                    hrp.Size = Vector3.new(2, 2, 1)
+                    hrp.Transparency = 1
+                    hrp.Material = Enum.Material.Plastic
+                    hrp.CanCollide = false
+                end
+            end
+        end
+    end
+end)
+
+-- Keybind Z para Hitbox
+UIS.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.Z then
+        getgenv().Hitbox = not getgenv().Hitbox
+        Rayfield:Notify({
+            Title = "Hitbox Expander",
+            Content = getgenv().Hitbox and "✅ Activado (Z)" or "❌ Desactivado",
+            Duration = 1.5
+        })
+    end
+end)
+
+-- ==================== ESP ====================
+local function ApplyESP(plr) 
+    if plr == LocalPlayer then return end 
+    local Char = plr.Character 
+    if not Char or not Char:FindFirstChild("Head") then return end
+
+    if getgenv().ESPName then
+        if not Char.Head:FindFirstChild("NameEsp") then
+            local bill = Instance.new("BillboardGui", Char.Head)
+            bill.Name = "NameEsp"
+            bill.Size = UDim2.new(0,100,0,20)
+            bill.AlwaysOnTop = true
+            bill.StudsOffset = Vector3.new(0,1.5,0)
+
+            local txt = Instance.new("TextLabel", bill)
+            txt.Size = UDim2.new(1,0,1,0)
+            txt.BackgroundTransparency = 1
+            txt.Text = plr.Name
+            txt.TextScaled = true
+            txt.TextStrokeTransparency = 0.4
+            txt.TextColor3 = Color3.fromRGB(255,0,0)
+        end
+    else
+        if Char.Head:FindFirstChild("NameEsp") then Char.Head.NameEsp:Destroy() end
+    end
+
+    if getgenv().ESPOutline then
+        if not Char:FindFirstChild("Highlight") then
+            local h = Instance.new("Highlight", Char)
+            h.FillTransparency = 1
+            h.OutlineColor = Color3.fromRGB(255,0,0)
+            h.DepthMode = Enum.HighlightDepthMode.AlwaysOnTop
+        end
+    else
+        if Char:FindFirstChild("Highlight") then Char.Highlight:Destroy() end
+    end
+end
+
+task.spawn(function() 
+    while task.wait(1) do 
+        for _,v in ipairs(Players:GetPlayers()) do 
+            ApplyESP(v) 
+        end 
+    end 
+end)
+
+--// ================= SKY CHANGER SYSTEM ================= //
+
+if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+    Lighting.SPE_LOCKED_SKY:Destroy()
+end
+
+getgenv().CurrentSkyName = nil
+
+local SkyData = {
+    ["Crimson Doom"] = {
+        Sky = {
+            Bk="rbxassetid://271042516",Dn="rbxassetid://271077243",Ft="rbxassetid://271042556",
+            Lf="rbxassetid://271042310",Rt="rbxassetid://271042467",Up="rbxassetid://271077958"
+        },
+        Ambient = Color3.fromRGB(120,20,20),
+        OutdoorAmbient = Color3.fromRGB(90,10,10),
+        Brightness = 1.2,
+        ClockTime = 18,
+        FogEnd = 100000
+    },
+
+    ["Deep Space"] = {
+        Sky = {
+            Bk="rbxassetid://149397692",Dn="rbxassetid://149397686",Ft="rbxassetid://149397697",
+            Lf="rbxassetid://149397684",Rt="rbxassetid://149397688",Up="rbxassetid://149397702"
+        },
+        Ambient = Color3.fromRGB(15,15,45),
+        OutdoorAmbient = Color3.fromRGB(10,10,35),
+        Brightness = 0.8,
+        ClockTime = 0,
+        FogEnd = 100000
+    },
+
+    ["Violet Galaxy"] = {
+        Sky = {
+            Bk="rbxassetid://159454299",Dn="rbxassetid://159454296",Ft="rbxassetid://159454293",
+            Lf="rbxassetid://159454286",Rt="rbxassetid://159454300",Up="rbxassetid://159454288"
+        },
+        Ambient = Color3.fromRGB(70,20,100),
+        OutdoorAmbient = Color3.fromRGB(55,10,80),
+        Brightness = 1,
+        ClockTime = 20,
+        FogEnd = 100000
+    },
+
+    ["Dark Storm"] = {
+        Sky = {
+            Bk="rbxassetid://159248188",Dn="rbxassetid://159248183",Ft="rbxassetid://159248187",
+            Lf="rbxassetid://159248173",Rt="rbxassetid://159248192",Up="rbxassetid://159248176"
+        },
+        Ambient = Color3.fromRGB(35,35,35),
+        OutdoorAmbient = Color3.fromRGB(20,20,20),
+        Brightness = 0.6,
+        ClockTime = 22,
+        FogEnd = 100000
+    }
+}
+
+local function GetLockedSky()
+    local s = Lighting:FindFirstChild("SPE_LOCKED_SKY")
+    if not s then
+        for _,v in pairs(Lighting:GetChildren()) do
+            if v:IsA("Sky") then
+                v:Destroy()
+            end
+        end
+        s = Instance.new("Sky")
+        s.Name = "SPE_LOCKED_SKY"
+        s.Parent = Lighting
+    end
+    return s
+end
+
+local function RemoveSkyEffects()
+    for _,v in pairs(Lighting:GetChildren()) do
+        if v:IsA("Atmosphere") or v:IsA("Clouds") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") then
+            v:Destroy()
+        end
+    end
+end
+
+local function ApplySkybox(name)
+    local D = SkyData[name]
+    if not D then return end
+
+    getgenv().CurrentSkyName = name
+
+    RemoveSkyEffects()
+
+    local s = GetLockedSky()
+    s.SkyboxBk = D.Sky.Bk
+    s.SkyboxDn = D.Sky.Dn
+    s.SkyboxFt = D.Sky.Ft
+    s.SkyboxLf = D.Sky.Lf
+    s.SkyboxRt = D.Sky.Rt
+    s.SkyboxUp = D.Sky.Up
+
+    Lighting.Ambient = D.Ambient
+    Lighting.OutdoorAmbient = D.OutdoorAmbient
+    Lighting.Brightness = D.Brightness
+    Lighting.ClockTime = D.ClockTime
+    Lighting.FogEnd = D.FogEnd
+end
+
+local function DisableSkybox()
+    getgenv().CurrentSkyName = nil
+
+    if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+        Lighting.SPE_LOCKED_SKY:Destroy()
+    end
+
+    Lighting.Ambient = Color3.fromRGB(128,128,128)
+    Lighting.OutdoorAmbient = Color3.fromRGB(128,128,128)
+    Lighting.Brightness = 2
+    Lighting.ClockTime = 14
+    Lighting.FogEnd = 100000
+end
+
+task.spawn(function()
+    while task.wait(1.2) do
+        pcall(function()
+            if getgenv().CurrentSkyName then
+                local D = SkyData[getgenv().CurrentSkyName]
+                if not D then return end
+
+                local s = GetLockedSky()
+
+                if s.SkyboxBk ~= D.Sky.Bk then
+                    s.SkyboxBk = D.Sky.Bk
+                    s.SkyboxDn = D.Sky.Dn
+                    s.SkyboxFt = D.Sky.Ft
+                    s.SkyboxLf = D.Sky.Lf
+                    s.SkyboxRt = D.Sky.Rt
+                    s.SkyboxUp = D.Sky.Up
+                end
+            end
+        end)
+    end
+end)
+
+-- ==================== MISC ====================
+getgenv().CameraFovValue = 70 
+MiscTab:CreateSlider({ Name = "Camera FOV", Range = {0,120}, Increment = 1, CurrentValue = 70, Callback = function(v) 
+    getgenv().CameraFovValue = v 
+    workspace.CurrentCamera.FieldOfView = v 
+end})
+
+LocalPlayer.CharacterAdded:Connect(function() 
+    task.wait(1) 
+    workspace.CurrentCamera.FieldOfView = getgenv().CameraFovValue 
+end)
+
+VisualTab:CreateToggle({Name="ESP Outline",CurrentValue=false,Callback=function(v)getgenv().ESPOutline=v end}) 
+VisualTab:CreateToggle({Name="ESP Name",CurrentValue=false,Callback=function(v)getgenv().ESPName=v end})
+VisualTab:CreateSection("Sky Changer")
+
+VisualTab:CreateButton({
+    Name = "Crimson Doom",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Crimson Doom" then
+            DisableSkybox()
+        else
+            ApplySkybox("Crimson Doom")
+        end
+    end
+})
+
+VisualTab:CreateButton({
+    Name = "Deep Space",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Deep Space" then
+            DisableSkybox()
+        else
+            ApplySkybox("Deep Space")
+        end
+    end
+})
+
+VisualTab:CreateButton({
+    Name = "Violet Galaxy",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Violet Galaxy" then
+            DisableSkybox()
+        else
+            ApplySkybox("Violet Galaxy")
+        end
+    end
+})
+
+VisualTab:CreateButton({
+    Name = "Dark Storm",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Dark Storm" then
+            DisableSkybox()
+        else
+            ApplySkybox("Dark Storm")
+        end
+    end
+})
+
+MiscTab:CreateButton({ Name = "Infinite Jump Toggle", Callback = function() getgenv().InfiniteJump = not getgenv().InfiniteJump end, })
+
+UIS.JumpRequest:Connect(function() 
+    if getgenv().InfiniteJump then 
+        local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") 
+        if hum then hum:ChangeState("Jumping") end 
+    end 
+end)
+
+MiscTab:CreateSlider({ Name = "WalkSpeed", Range = {16,150}, Increment = 1, CurrentValue = 16, Callback = function(v) 
+    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") 
+    if hum then hum.WalkSpeed = v end 
+end})
+
+MiscTab:CreateSlider({ Name = "JumpPower", Range = {50,200}, Increment = 1, CurrentValue = 50, Callback = function(v) 
+    local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") 
+    if hum then hum.JumpPower = v end 
+end})
