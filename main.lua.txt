@@ -82,14 +82,11 @@ MainTab:CreateParagraph({
 })
 
 -- ==================== AIMLOCK ====================
+
+-- ==================== COMBAT ====================
+
 getgenv().AimlockEnabled = false
-getgenv().AimlockTarget = "UsernameAqui" -- pon el user exacto
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-
-local LocalPlayer = Players.LocalPlayer
-local Camera = workspace.CurrentCamera
+getgenv().AimlockTarget = ""
 
 local LockedPlayer = nil
 
@@ -102,33 +99,48 @@ local function FindTargetByName()
     return nil
 end
 
-RunService.RenderStepped:Connect(function()
-    if not getgenv().AimlockEnabled then return end
+CombatTab:CreateToggle({
+    Name="Aimbot",
+    CurrentValue=false,
+    Callback=function(v)
+        getgenv().AimlockEnabled = v
+        Rayfield:Notify({
+            Title="Aimbot",
+            Content=v and "✅ Enabled" or "❌ Disabled",
+            Duration=2
+        })
+    end
+})
 
-    if not LockedPlayer or LockedPlayer.Name ~= getgenv().AimlockTarget then
+CombatTab:CreateInput({
+    Name = "Aimbot Target",
+    PlaceholderText = "Write Username...",
+    RemoveTextAfterFocusLost = false,
+    Callback = function(Text)
+        getgenv().AimlockTarget = Text
+        LockedPlayer = nil
+    end,
+})
+
+RS.RenderStepped:Connect(function()
+    if not getgenv().AimlockEnabled then return end
+    if getgenv().AimlockTarget == "" then return end
+
+    if not LockedPlayer then
         LockedPlayer = FindTargetByName()
     end
 
-    if LockedPlayer and LockedPlayer.Character and LockedPlayer.Character:FindFirstChild("Head") then
-        local targetHead = LockedPlayer.Character.Head
+    if LockedPlayer and LockedPlayer.Character then
+        local targetPart = LockedPlayer.Character:FindFirstChild("Head") or LockedPlayer.Character:FindFirstChild("HumanoidRootPart")
 
-        local direction = (targetHead.Position - Camera.CFrame.Position).Unit
-        local targetCFrame = CFrame.lookAt(Camera.CFrame.Position, Camera.CFrame.Position + direction)
+        if targetPart then
+            local direction = (targetPart.Position - Camera.CFrame.Position).Unit
+            local targetCFrame = CFrame.lookAt(Camera.CFrame.Position, Camera.CFrame.Position + direction)
 
-        Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, 0.45)
+            Camera.CFrame = Camera.CFrame:Lerp(targetCFrame, 0.18)
+        end
     end
 end)
-
--- ==================== COMBAT ====================
-
-CombatTab:CreateToggle({Name="Aimlock Enabled",CurrentValue=false,Callback=function(v)
-    getgenv().AimlockEnabled = v
-    Rayfield:Notify({
-        Title = "Aimlock",
-        Content = v and "✅ Activado" or "❌ Desactivado",
-        Duration = 2
-    })
-end})
 
 CombatTab:CreateToggle({Name="Hitbox Expander",CurrentValue=false,Callback=function(v)
     getgenv().Hitbox = v 
