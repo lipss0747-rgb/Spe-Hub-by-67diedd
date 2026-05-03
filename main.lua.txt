@@ -54,6 +54,94 @@ local RS = game:GetService("RunService")
 local TPService = game:GetService("TeleportService") 
 local Camera = workspace.CurrentCamera 
 local VirtualUser = game:GetService("VirtualUser")
+local Lighting = game:GetService("Lighting")
+
+local SkyData = {
+    ["Crimson Doom"] = {
+        Bk="rbxassetid://271042516",Dn="rbxassetid://271077243",Ft="rbxassetid://271042556",
+        Lf="rbxassetid://271042310",Rt="rbxassetid://271042467",Up="rbxassetid://271077958"
+    },
+
+    ["Deep Space"] = {
+        Bk="rbxassetid://149397692",Dn="rbxassetid://149397686",Ft="rbxassetid://149397697",
+        Lf="rbxassetid://149397684",Rt="rbxassetid://149397688",Up="rbxassetid://149397702"
+    },
+
+    ["Violet Galaxy"] = {
+        Bk="rbxassetid://159454299",Dn="rbxassetid://159454296",Ft="rbxassetid://159454293",
+        Lf="rbxassetid://159454286",Rt="rbxassetid://159454300",Up="rbxassetid://159454288"
+    },
+
+    ["Dark Storm"] = {
+        Bk="rbxassetid://159248188",Dn="rbxassetid://159248183",Ft="rbxassetid://159248187",
+        Lf="rbxassetid://159248173",Rt="rbxassetid://159248192",Up="rbxassetid://159248176"
+    }
+}
+
+getgenv().CurrentSkyName = nil
+
+local function GetLockedSky()
+    local s = Lighting:FindFirstChild("SPE_LOCKED_SKY")
+    if not s then
+        for _,v in pairs(Lighting:GetChildren()) do
+            if v:IsA("Sky") then
+                v:Destroy()
+            end
+        end
+        s = Instance.new("Sky")
+        s.Name = "SPE_LOCKED_SKY"
+        s.Parent = Lighting
+    end
+    return s
+end
+
+local function RemoveSkyEffects()
+    for _,v in pairs(Lighting:GetChildren()) do
+        if v:IsA("Atmosphere") or v:IsA("Clouds") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") then
+            v:Destroy()
+        end
+    end
+end
+
+local function ApplySkybox(name)
+    local D = SkyData[name]
+    if not D then return end
+
+    getgenv().CurrentSkyName = name
+
+    local s = GetLockedSky()
+    s.SkyboxBk = D.Bk
+    s.SkyboxDn = D.Dn
+    s.SkyboxFt = D.Ft
+    s.SkyboxLf = D.Lf
+    s.SkyboxRt = D.Rt
+    s.SkyboxUp = D.Up
+end
+
+local function DisableSkybox()
+    getgenv().CurrentSkyName = nil
+    if Lighting:FindFirstChild("SPE_LOCKED_SKY") then
+        Lighting.SPE_LOCKED_SKY:Destroy()
+    end
+end
+
+RS.RenderStepped:Connect(function()
+    if getgenv().CurrentSkyName then
+        RemoveSkyEffects()
+
+        local D = SkyData[getgenv().CurrentSkyName]
+        local s = GetLockedSky()
+
+        if s.SkyboxBk ~= D.Bk then
+            s.SkyboxBk = D.Bk
+            s.SkyboxDn = D.Dn
+            s.SkyboxFt = D.Ft
+            s.SkyboxLf = D.Lf
+            s.SkyboxRt = D.Rt
+            s.SkyboxUp = D.Up
+        end
+    end
+end)
 
 getgenv().FOVRadius = 120 
 getgenv().Hitbox = false 
@@ -239,6 +327,51 @@ end)
 
 VisualTab:CreateToggle({Name="ESP Outline",CurrentValue=false,Callback=function(v)getgenv().ESPOutline=v end}) 
 VisualTab:CreateToggle({Name="ESP Name",CurrentValue=false,Callback=function(v)getgenv().ESPName=v end})
+VisualTab:CreateSection("Sky Changer")
+
+VisualTab:CreateButton({
+    Name = "Crimson Doom",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Crimson Doom" then
+            DisableSkybox()
+        else
+            ApplySkybox("Crimson Doom")
+        end
+    end
+})
+
+VisualTab:CreateButton({
+    Name = "Deep Space",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Deep Space" then
+            DisableSkybox()
+        else
+            ApplySkybox("Deep Space")
+        end
+    end
+})
+
+VisualTab:CreateButton({
+    Name = "Violet Galaxy",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Violet Galaxy" then
+            DisableSkybox()
+        else
+            ApplySkybox("Violet Galaxy")
+        end
+    end
+})
+
+VisualTab:CreateButton({
+    Name = "Dark Storm",
+    Callback = function()
+        if getgenv().CurrentSkyName == "Dark Storm" then
+            DisableSkybox()
+        else
+            ApplySkybox("Dark Storm")
+        end
+    end
+})
 
 MiscTab:CreateButton({ Name = "Infinite Jump Toggle", Callback = function() getgenv().InfiniteJump = not getgenv().InfiniteJump end, })
 
