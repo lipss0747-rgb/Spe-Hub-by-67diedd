@@ -83,39 +83,35 @@ MainTab:CreateParagraph({
 
 -- ==================== AIMLOCK ====================
 getgenv().AimlockEnabled = false
+getgenv().AimlockTarget = "UsernameAqui" -- pon el user exacto
 
+local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 
-local function GetClosestPlayer()
-    local closest = nil
-    local shortestDistance = math.huge
+local LocalPlayer = Players.LocalPlayer
+local Camera = workspace.CurrentCamera
 
-    local myChar = LocalPlayer.Character
-    if not myChar or not myChar:FindFirstChild("HumanoidRootPart") then return nil end
+local LockedPlayer = nil
 
-    local myPos = myChar.HumanoidRootPart.Position
-
-    for _, v in ipairs(Players:GetPlayers()) do
-        if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("Head") then
-            local head = v.Character.Head
-            local dist = (head.Position - myPos).Magnitude
-
-            if dist < shortestDistance then
-                shortestDistance = dist
-                closest = head
-            end
+local function FindTargetByName()
+    for _,v in ipairs(Players:GetPlayers()) do
+        if string.lower(v.Name) == string.lower(getgenv().AimlockTarget) then
+            return v
         end
     end
-
-    return closest
+    return nil
 end
 
 RunService.RenderStepped:Connect(function()
     if not getgenv().AimlockEnabled then return end
 
-    local targetHead = GetClosestPlayer()
+    if not LockedPlayer or LockedPlayer.Name ~= getgenv().AimlockTarget then
+        LockedPlayer = FindTargetByName()
+    end
 
-    if targetHead then
+    if LockedPlayer and LockedPlayer.Character and LockedPlayer.Character:FindFirstChild("Head") then
+        local targetHead = LockedPlayer.Character.Head
+
         local direction = (targetHead.Position - Camera.CFrame.Position).Unit
         local targetCFrame = CFrame.lookAt(Camera.CFrame.Position, Camera.CFrame.Position + direction)
 
