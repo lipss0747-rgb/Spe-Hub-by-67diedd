@@ -313,6 +313,8 @@ local function ApplySkybox(name)
 
     getgenv().CurrentSkyName = name
 
+    RemoveSkyEffects()
+
     local s = GetLockedSky()
     s.SkyboxBk = D.Sky.Bk
     s.SkyboxDn = D.Sky.Dn
@@ -343,7 +345,7 @@ local function DisableSkybox()
 end
 
 task.spawn(function()
-    while task.wait(1) do
+    while task.wait(1.2) do
         pcall(function()
             if getgenv().CurrentSkyName then
                 local D = SkyData[getgenv().CurrentSkyName]
@@ -352,20 +354,12 @@ task.spawn(function()
                 local s = GetLockedSky()
 
                 if s.SkyboxBk ~= D.Sky.Bk then
-                    RemoveSkyEffects()
-
                     s.SkyboxBk = D.Sky.Bk
                     s.SkyboxDn = D.Sky.Dn
                     s.SkyboxFt = D.Sky.Ft
                     s.SkyboxLf = D.Sky.Lf
                     s.SkyboxRt = D.Sky.Rt
                     s.SkyboxUp = D.Sky.Up
-
-                    Lighting.Ambient = D.Ambient
-                    Lighting.OutdoorAmbient = D.OutdoorAmbient
-                    Lighting.Brightness = D.Brightness
-                    Lighting.ClockTime = D.ClockTime
-                    Lighting.FogEnd = D.FogEnd
                 end
             end
         end)
