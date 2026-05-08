@@ -151,8 +151,17 @@ CombatTab:CreateSlider({Name="Hitbox Transparency",Range={0,10},Increment=1,Curr
 
 CombatTab:CreateSlider({Name="Aimbot Range (FOV)",Range={50,500},Increment=5,CurrentValue=120,Callback=function(v)getgenv().FOVRadius=v end})
 
+CombatTab:CreateToggle({
+    Name = "Fake Lag",
+    CurrentValue = false,
+    Callback = function(Value)
+        toggleFakeLag(Value)
+    end
+})
+
 -- ==================== HITBOX CORREGIDO ====================
 task.spawn(function()
+
     while task.wait(0.25) do
         for _,v in ipairs(Players:GetPlayers()) do
             if v ~= LocalPlayer and v.Character and v.Character:FindFirstChild("HumanoidRootPart") then
@@ -450,5 +459,97 @@ end})
 
 MiscTab:CreateSlider({ Name = "JumpPower", Range = {50,200}, Increment = 1, CurrentValue = 50, Callback = function(v) 
     local hum = LocalPlayer.Character and LocalPlayer.Character:FindFirstChildOfClass("Humanoid") 
-    if hum then hum.JumpPower = v end 
+    if hum then hum.JumpPower = v end7
 end})
+
+local player = game.Players.LocalPlayer
+local fakeLagActive = false
+local savedCFrame = nil
+local connection = nil
+local currentRoot = nil
+local currentCharacter = nil
+
+local function updateCharacter()
+    currentCharacter = player.Character
+    if not currentCharacter then return end
+    currentRoot = currentCharacter:WaitForChild("HumanoidRootPart", 3)
+end
+
+local function toggleFakeLag()
+    fakeLagActive = not fakeLagActive
+    
+    if fakeLagActive then
+        if not currentRoot then 
+            fakeLagActive = false 
+            return 
+        end
+        
+        savedCFrame = currentRoot.CFrame
+        print("✅ FAKE LAG ACTIVADO - Pantalla congelada | Posición guardada")
+        
+        if connection then connection:Disconnect() end
+        
+        -- Congelamiento fuerte (pantalla se siente más congelada)
+        connection = game:GetService("RunService").RenderStepped:Connect(function()
+            if currentRoot and fakeLagActive and savedCFrame then
+                currentRoot.CFrame = savedCFrame
+                currentRoot.Velocity = Vector3.new(0, 0, 0)
+                currentRoot.AssemblyLinearVelocity = Vector3.new(0, 0, 0)
+                currentRoot.AssemblyAngularVelocity = Vector3.new(0, 0, 0)
+            end
+        end)
+        
+        -- Ocultar movimiento del Humanoid
+        local hum = currentCharacter:FindFirstChild("Humanoid")
+        if hum then
+            hum.WalkSpeed = 0
+            hum.JumpPower = 0
+            hum.PlatformStand = true  -- Ayuda a sentir más "congelado"
+        end
+        
+    else
+        -- DESACTIVAR
+        if connection then
+            connection:Disconnect()
+            connection = nil
+        end
+        
+        if savedCFrame and currentRoot then
+            currentRoot.CFrame = savedCFrame
+            currentRoot.Velocity = Vector3.new(0,0,0)
+            currentRoot.AssemblyLinearVelocity = Vector3.new(0,0,0)
+            print("❌ FAKE LAG DESACTIVADO - Teleport a posición original")
+        end
+        
+        local hum = currentCharacter and currentCharacter:FindFirstChild("Humanoid")
+        if hum then
+            hum.WalkSpeed = 16
+            hum.JumpPower = 50
+            hum.PlatformStand = false
+        end
+        
+        savedCFrame = nil
+    end
+end
+
+-- Persistencia al respawnear
+player.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    updateCharacter()
+end)
+
+if player.Character then
+    task.wait(0.5)
+    updateCharacter()
+end
+
+-- Tecla N
+game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+    if gp then return end
+    if input.KeyCode == Enum.KeyCode.N then
+        toggleFakeLag()
+    end
+end)
+
+print("🚀 Fake Lag - Congelamiento de Pantalla cargado")
+print("Presiona N para activar / desactivar")
