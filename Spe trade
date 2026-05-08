@@ -151,14 +151,6 @@ CombatTab:CreateSlider({Name="Hitbox Transparency",Range={0,10},Increment=1,Curr
 
 CombatTab:CreateSlider({Name="Aimbot Range (FOV)",Range={50,500},Increment=5,CurrentValue=120,Callback=function(v)getgenv().FOVRadius=v end})
 
-CombatTab:CreateToggle({
-    Name = "Fake Lag",
-    CurrentValue = false,
-    Callback = function(Value)
-        toggleFakeLag(Value)
-    end
-})
-
 -- ==================== HITBOX CORREGIDO ====================
 task.spawn(function()
 
