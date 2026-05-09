@@ -530,4 +530,4 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             Duration = 2
         })
     end
-end)
+end})
