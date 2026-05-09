@@ -527,7 +527,8 @@ CombatTab:CreateToggle({
                 Duration = 2
             })
         end
-    end
+   end
+})
 
 UIS.InputBegan:Connect(function(input, gameProcessed)
 
