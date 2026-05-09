@@ -1,7 +1,7 @@
 local Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
 
 local Window = Rayfield:CreateWindow({
-   Name = "Spe Hub Panel",
+   Name = "Spectral Panel",
    Icon = "flame",
    LoadingTitle = "Spe Hub Private Build",
    LoadingSubtitle = "by @67diedd",
@@ -77,8 +77,8 @@ MainTab:CreateParagraph({Title = "Executor Detected", Content = ExecutorName})
 
 -- ==================== HOME STATUS ====================
 MainTab:CreateParagraph({
-    Title = "Spe Hub Status",
-    Content = "Premium Build Loaded Successfully"
+    Title = "Join 5shots trades",
+    Content = "https://discord.gg/xGy6tHMA3"
 })
 
 -- ==================== AIMLOCK ====================
