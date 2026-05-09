@@ -454,77 +454,59 @@ MiscTab:CreateSlider({ Name = "JumpPower", Range = {50,200}, Increment = 1, Curr
     if hum then hum.JumpPower = v end
 end})
 
---// ================= FAKE LAG ================= //-- 
+--// ================= FAKE LAG ================= //--
 
 getgenv().FakeLag = false
 
-local FreezeConnection = nil
-local SavedPosition = nil
+local FakeLagConnection
 
 local function StartFakeLag()
 
-    local Character = LocalPlayer.Character
-    if not Character then return end
-
-    local Root = Character:FindFirstChild("HumanoidRootPart")
-    if not Root then return end
-
-    SavedPosition = Root.CFrame
-
-    if FreezeConnection then
-        FreezeConnection:Disconnect()
+    if FakeLagConnection then
+        FakeLagConnection:Disconnect()
     end
 
-    FreezeConnection = RS.Heartbeat:Connect(function()
+    FakeLagConnection = RS.Heartbeat:Connect(function()
 
-        if getgenv().FakeLag and Root then
+        if not getgenv().FakeLag then return end
 
-            Root.CFrame = SavedPosition
-            Root.AssemblyLinearVelocity = Vector3.zero
-            Root.AssemblyAngularVelocity = Vector3.zero
+        local Character = LocalPlayer.Character
+        if not Character then return end
 
-        end
+        local Root = Character:FindFirstChild("HumanoidRootPart")
+        if not Root then return end
+
+        Root.Velocity = Vector3.new(0,0,0)
     end)
 end
 
 local function StopFakeLag()
 
-    if FreezeConnection then
-        FreezeConnection:Disconnect()
-        FreezeConnection = nil
+    if FakeLagConnection then
+        FakeLagConnection:Disconnect()
+        FakeLagConnection = nil
     end
 end
 
 CombatTab:CreateToggle({
     Name = "Fake Lag",
     CurrentValue = false,
-    Flag = "FakeLagToggle",
 
     Callback = function(Value)
 
         getgenv().FakeLag = Value
 
         if Value then
-
             StartFakeLag()
-
-            Rayfield:Notify({
-                Title = "Fake Lag",
-                Content = "Enabled",
-                Duration = 2
-            })
-
         else
-
             StopFakeLag()
-
-            Rayfield:Notify({
-                Title = "Fake Lag",
-                Content = "Disabled",
-                Duration = 2
-            })
-
         end
+
+        Rayfield:Notify({
+            Title = "Fake Lag",
+            Content = Value and "✅ Enabled" or "❌ Disabled",
+            Duration = 2
+        })
     end
 })
 
@@ -541,5 +523,11 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         else
             StopFakeLag()
         end
+
+        Rayfield:Notify({
+            Title = "Fake Lag",
+            Content = getgenv().FakeLag and "✅ Enabled (N)" or "❌ Disabled (N)",
+            Duration = 2
+        })
     end
-end})
+end)
