@@ -454,14 +454,9 @@ MiscTab:CreateSlider({ Name = "JumpPower", Range = {50,200}, Increment = 1, Curr
     if hum then hum.JumpPower = v end
 end})
 
---// ================= FAKE LAG ================= //--
+--// ================= FAKE LAG ================= //-- 
 
 getgenv().FakeLag = false
-
-local Players = game:GetService("Players")
-local RunService = game:GetService("RunService")
-
-local LocalPlayer = Players.LocalPlayer
 
 local FreezeConnection = nil
 local SavedPosition = nil
@@ -480,7 +475,7 @@ local function StartFakeLag()
         FreezeConnection:Disconnect()
     end
 
-    FreezeConnection = RunService.Heartbeat:Connect(function()
+    FreezeConnection = RS.Heartbeat:Connect(function()
 
         if getgenv().FakeLag and Root then
 
@@ -515,7 +510,7 @@ CombatTab:CreateToggle({
 
             Rayfield:Notify({
                 Title = "Fake Lag",
-                Content = "✅ Enabled",
+                Content = "Enabled",
                 Duration = 2
             })
 
@@ -525,7 +520,7 @@ CombatTab:CreateToggle({
 
             Rayfield:Notify({
                 Title = "Fake Lag",
-                Content = "❌ Disabled",
+                Content = "Disabled",
                 Duration = 2
             })
 
@@ -542,25 +537,9 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         getgenv().FakeLag = not getgenv().FakeLag
 
         if getgenv().FakeLag then
-
             StartFakeLag()
-
-            Rayfield:Notify({
-                Title = "Fake Lag",
-                Content = "✅ Enabled (N)",
-                Duration = 2
-            })
-
         else
-
             StopFakeLag()
-
-            Rayfield:Notify({
-                Title = "Fake Lag",
-                Content = "❌ Disabled (N)",
-                Duration = 2
-            })
-
         end
     end
 end)
