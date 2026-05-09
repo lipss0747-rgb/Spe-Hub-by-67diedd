@@ -528,4 +528,33 @@ CombatTab:CreateToggle({
             })
         end
     end
+
+UIS.InputBegan:Connect(function(input, gameProcessed)
+
+    if gameProcessed then return end
+
+    if input.KeyCode == Enum.KeyCode.N then
+
+        getgenv().FakeLag = not getgenv().FakeLag
+
+        if getgenv().FakeLag then
+            StartFakeLag()
+
+            Rayfield:Notify({
+                Title = "Fake Lag",
+                Content = "✅ Enabled (N)",
+                Duration = 2
+            })
+
+        else
+            StopFakeLag()
+
+            Rayfield:Notify({
+                Title = "Fake Lag",
+                Content = "❌ Disabled (N)",
+                Duration = 2
+            })
+        end
+    end
+end)
 })
