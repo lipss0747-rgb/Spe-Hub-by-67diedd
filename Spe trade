@@ -25,16 +25,17 @@ local Window = Rayfield:CreateWindow({
       RememberJoins = true
    },
 
-  KeySystem = true,
-KeySettings = {
-    Title = "Spe Hub Authentication",
-    Subtitle = "Private Access Only",
-    Note = "DM @67diedd to purchase your key",
-    FileName = "Spehubkeysytem",
-    SaveKey = true,
-    GrabKeyFromSite = false,
-    Key = {"https://pastebin.com/raw/M91s8iTe"}
-}
+ KeySystem = true,
+   KeySettings = {
+      Title = "Spe Hub Authentication",
+      Subtitle = "Private Access Only",
+      Note = "DM @67diedd to purchase your key",
+      FileName = "Spehubkeysytem",
+      SaveKey = true,
+      GrabKeyFromSite = true,
+      Key = {"TRD-X91K-PL2Q"}
+   }
+})
 
 local MainTab = Window:CreateTab("🏠 Home", nil) 
 local CombatTab = Window:CreateTab("⚔ Combat", nil) 
