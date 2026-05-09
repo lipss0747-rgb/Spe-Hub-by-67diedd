@@ -33,7 +33,7 @@ local Window = Rayfield:CreateWindow({
       FileName = "Spehubkeysytem",
       SaveKey = true,
      GrabKeyFromSite = true,
-     Key = {"KEY123"}
+     Key = {"TRD-X91K-PL2Q"}
    }
 })
 
