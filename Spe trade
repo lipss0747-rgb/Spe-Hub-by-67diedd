@@ -527,7 +527,7 @@ CombatTab:CreateToggle({
                 Duration = 2
             })
         end
-   end
+    end
 })
 
 UIS.InputBegan:Connect(function(input, gameProcessed)
@@ -539,6 +539,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
         getgenv().FakeLag = not getgenv().FakeLag
 
         if getgenv().FakeLag then
+
             StartFakeLag()
 
             Rayfield:Notify({
@@ -548,6 +549,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             })
 
         else
+
             StopFakeLag()
 
             Rayfield:Notify({
@@ -555,7 +557,7 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
                 Content = "❌ Disabled (N)",
                 Duration = 2
             })
+
         end
     end
 end)
-})
