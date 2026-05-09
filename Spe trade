@@ -32,8 +32,8 @@ local Window = Rayfield:CreateWindow({
       Note = "DM @67diedd to purchase your key",
       FileName = "Spehubkeysytem",
       SaveKey = true,
-      GrabKeyFromSite = true,
-      Key = {"https://pastebin.com/raw/M91s8iTe"}
+     GrabKeyFromSite = true,
+     Key = {"KEY123"}
    }
 })
 
