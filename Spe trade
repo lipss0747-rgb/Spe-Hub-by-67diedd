@@ -513,7 +513,8 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             Title = "Fake Lag",
             Content = getgenv().FakeLag and "✅ Enabled (N)" or "❌ Disabled (N)",
             Duration = 2
-            })
-        end
+        })
     end
-})
+end)
+
+print("FAKE LAG LOADED")
