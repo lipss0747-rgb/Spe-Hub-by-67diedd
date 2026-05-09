@@ -542,4 +542,4 @@ UIS.InputBegan:Connect(function(input, gameProcessed)
             StopFakeLag()
         end
     end
-end)
+end})
