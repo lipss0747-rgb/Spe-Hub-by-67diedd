@@ -249,8 +249,8 @@ local SkyData = {
             Bk="rbxassetid://271042516",Dn="rbxassetid://271077243",Ft="rbxassetid://271042556",
             Lf="rbxassetid://271042310",Rt="rbxassetid://271042467",Up="rbxassetid://271077958"
         },
-        Ambient = Color3.fromRGB(120,20,20),
-        OutdoorAmbient = Color3.fromRGB(90,10,10),
+        Ambient = Color3.fromRGB(170,170,170)
+        OutdoorAmbient = Color3.fromRGB(140,140,140)
         Brightness = 1.2,
         ClockTime = 18,
         FogEnd = 100000
@@ -261,9 +261,9 @@ local SkyData = {
             Bk="rbxassetid://149397692",Dn="rbxassetid://149397686",Ft="rbxassetid://149397697",
             Lf="rbxassetid://149397684",Rt="rbxassetid://149397688",Up="rbxassetid://149397702"
         },
-        Ambient = Color3.fromRGB(15,15,45),
-        OutdoorAmbient = Color3.fromRGB(10,10,35),
-        Brightness = 0.8,
+        Ambient = Color3.fromRGB(170,170,170)
+        OutdoorAmbient = Color3.fromRGB(140,140,140)
+        Brightness = 2.5,
         ClockTime = 0,
         FogEnd = 100000
     },
@@ -273,9 +273,9 @@ local SkyData = {
             Bk="rbxassetid://159454299",Dn="rbxassetid://159454296",Ft="rbxassetid://159454293",
             Lf="rbxassetid://159454286",Rt="rbxassetid://159454300",Up="rbxassetid://159454288"
         },
-        Ambient = Color3.fromRGB(70,20,100),
-        OutdoorAmbient = Color3.fromRGB(55,10,80),
-        Brightness = 1,
+       Ambient = Color3.fromRGB(170,170,170)
+       OutdoorAmbient = Color3.fromRGB(140,140,140)
+        Brightness = 2.5,
         ClockTime = 20,
         FogEnd = 100000
     },
@@ -285,9 +285,9 @@ local SkyData = {
             Bk="rbxassetid://159248188",Dn="rbxassetid://159248183",Ft="rbxassetid://159248187",
             Lf="rbxassetid://159248173",Rt="rbxassetid://159248192",Up="rbxassetid://159248176"
         },
-        Ambient = Color3.fromRGB(35,35,35),
-        OutdoorAmbient = Color3.fromRGB(20,20,20),
-        Brightness = 0.6,
+        Ambient = Color3.fromRGB(170,170,170)
+        OutdoorAmbient = Color3.fromRGB(140,140,140) 
+        Brightness = 2.5,
         ClockTime = 22,
         FogEnd = 100000
     }
@@ -354,7 +354,7 @@ local function DisableSkybox()
 end
 
 task.spawn(function()
-    while task.wait(1.2) do
+    while task.wait(0.5) do
         pcall(function()
             if getgenv().CurrentSkyName then
                 local D = SkyData[getgenv().CurrentSkyName]
@@ -362,14 +362,26 @@ task.spawn(function()
 
                 local s = GetLockedSky()
 
-                if s.SkyboxBk ~= D.Sky.Bk then
-                    s.SkyboxBk = D.Sky.Bk
-                    s.SkyboxDn = D.Sky.Dn
-                    s.SkyboxFt = D.Sky.Ft
-                    s.SkyboxLf = D.Sky.Lf
-                    s.SkyboxRt = D.Sky.Rt
-                    s.SkyboxUp = D.Sky.Up
-                end
+                -- Reaplicar skybox
+                s.SkyboxBk = D.Sky.Bk
+                s.SkyboxDn = D.Sky.Dn
+                s.SkyboxFt = D.Sky.Ft
+                s.SkyboxLf = D.Sky.Lf
+                s.SkyboxRt = D.Sky.Rt
+                s.SkyboxUp = D.Sky.Up
+
+                -- BLOQUEAR iluminación
+                Lighting.ClockTime = D.ClockTime
+                Lighting.Brightness = D.Brightness
+                Lighting.Ambient = D.Ambient
+                Lighting.OutdoorAmbient = D.OutdoorAmbient
+                Lighting.FogEnd = D.FogEnd
+
+                -- Extras importantes
+                Lighting.GlobalShadows = false
+                Lighting.EnvironmentDiffuseScale = 0
+                Lighting.EnvironmentSpecularScale = 0
+                Lighting.ExposureCompensation = 0.3
             end
         end)
     end
