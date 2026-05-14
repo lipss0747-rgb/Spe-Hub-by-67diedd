@@ -244,8 +244,8 @@ end
 getgenv().CurrentSkyName = nil
 
 local SkyData = {
-    ["Crimson Doom"] = {
-         Sky = {
+  ["Crimson Doom"] = {
+    Sky = {
         Bk="rbxassetid://271042516",
         Dn="rbxassetid://271077243",
         Ft="rbxassetid://271042556",
@@ -254,16 +254,17 @@ local SkyData = {
         Up="rbxassetid://271077958"
     },
 
-    Ambient = Color3.fromRGB(80,20,40),
-    OutdoorAmbient = Color3.fromRGB(60,10,30),
+    Ambient = Color3.fromRGB(140,60,80),
+    OutdoorAmbient = Color3.fromRGB(120,50,70),
 
-    ColorShift_Top = Color3.fromRGB(120,40,80),
-    ColorShift_Bottom = Color3.fromRGB(80,20,50),
+    ColorShift_Top = Color3.fromRGB(255,90,120),
+    ColorShift_Bottom = Color3.fromRGB(180,50,80),
 
-    Brightness = 1,
-    ClockTime = 18,
+    Brightness = 1.8,
+    ClockTime = 17,
+
     FogEnd = 100000
-    },
+}
 
     ["Deep Space"] = {
         Sky = {
@@ -440,42 +441,33 @@ local function DisableSkybox()
 end
 
 task.spawn(function()
-    while task.wait(1.5) do
-        pcall(function()
-
-            if not getgenv().CurrentSkyName then
-                return
-            end
+    while task.wait(3) do
+        if getgenv().CurrentSkyName then
 
             local D = SkyData[getgenv().CurrentSkyName]
             if not D then return end
 
-            local s = GetLockedSky()
-
-            -- SOLO si el juego cambió el sky
-            if s.SkyboxBk ~= D.Sky.Bk then
-                s.SkyboxBk = D.Sky.Bk
-                s.SkyboxDn = D.Sky.Dn
-                s.SkyboxFt = D.Sky.Ft
-                s.SkyboxLf = D.Sky.Lf
-                s.SkyboxRt = D.Sky.Rt
-                s.SkyboxUp = D.Sky.Up
+            -- Solo si cambió demasiado
+            if math.abs(Lighting.ClockTime - D.ClockTime) > 1 then
+                Lighting.ClockTime = D.ClockTime
             end
 
-            -- Mantener iluminación
-            Lighting.ClockTime = 14
-            Lighting.Brightness = D.Brightness
-            Lighting.Ambient = D.Ambient
-            Lighting.OutdoorAmbient = D.OutdoorAmbient
-            Lighting.FogEnd = D.FogEnd
+            if Lighting.Ambient ~= D.Ambient then
+                Lighting.Ambient = D.Ambient
+            end
 
-            Lighting.GlobalShadows = false
-            Lighting.EnvironmentDiffuseScale = 0
-            Lighting.EnvironmentSpecularScale = 0
-            Lighting.ExposureCompensation = 0.3
-            Lighting.Technology = Enum.Technology.Compatibility
+            if Lighting.OutdoorAmbient ~= D.OutdoorAmbient then
+                Lighting.OutdoorAmbient = D.OutdoorAmbient
+            end
 
-        end)
+            if Lighting.ColorShift_Top ~= D.ColorShift_Top then
+                Lighting.ColorShift_Top = D.ColorShift_Top
+            end
+
+            if Lighting.ColorShift_Bottom ~= D.ColorShift_Bottom then
+                Lighting.ColorShift_Bottom = D.ColorShift_Bottom
+            end
+        end
     end
 end)
 
