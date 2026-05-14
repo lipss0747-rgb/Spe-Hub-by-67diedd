@@ -245,15 +245,24 @@ getgenv().CurrentSkyName = nil
 
 local SkyData = {
     ["Crimson Doom"] = {
-        Sky = {
-            Bk="rbxassetid://271042516",Dn="rbxassetid://271077243",Ft="rbxassetid://271042556",
-            Lf="rbxassetid://271042310",Rt="rbxassetid://271042467",Up="rbxassetid://271077958"
-        },
-      Ambient = Color3.fromRGB(120,120,120),
-      OutdoorAmbient = Color3.fromRGB(100,100,100),
-        Brightness = 1.2,
-        ClockTime = 14,
-        FogEnd = 100000
+         Sky = {
+        Bk="rbxassetid://271042516",
+        Dn="rbxassetid://271077243",
+        Ft="rbxassetid://271042556",
+        Lf="rbxassetid://271042310",
+        Rt="rbxassetid://271042467",
+        Up="rbxassetid://271077958"
+    },
+
+    Ambient = Color3.fromRGB(80,20,40),
+    OutdoorAmbient = Color3.fromRGB(60,10,30),
+
+    ColorShift_Top = Color3.fromRGB(120,40,80),
+    ColorShift_Bottom = Color3.fromRGB(80,20,50),
+
+    Brightness = 1,
+    ClockTime = 18,
+    FogEnd = 100000
     },
 
     ["Deep Space"] = {
@@ -261,11 +270,15 @@ local SkyData = {
             Bk="rbxassetid://149397692",Dn="rbxassetid://149397686",Ft="rbxassetid://149397697",
             Lf="rbxassetid://149397684",Rt="rbxassetid://149397688",Up="rbxassetid://149397702"
         },
-      Ambient = Color3.fromRGB(120,120,120),
-      OutdoorAmbient = Color3.fromRGB(100,100,100),
-        Brightness = 0.8,
-        ClockTime = 14,
-        FogEnd = 100000
+     Ambient = Color3.fromRGB(15,20,45),
+    OutdoorAmbient = Color3.fromRGB(10,15,35),
+
+    ColorShift_Top = Color3.fromRGB(40,70,140),
+    ColorShift_Bottom = Color3.fromRGB(10,20,60),
+
+    Brightness = 0.75,
+    ClockTime = 0,
+    FogEnd = 100000
     },
 
     ["Violet Galaxy"] = {
@@ -273,11 +286,14 @@ local SkyData = {
             Bk="rbxassetid://159454299",Dn="rbxassetid://159454296",Ft="rbxassetid://159454293",
             Lf="rbxassetid://159454286",Rt="rbxassetid://159454300",Up="rbxassetid://159454288"
         },
-      Ambient = Color3.fromRGB(120,120,120),
-      OutdoorAmbient = Color3.fromRGB(100,100,100),
-        Brightness = 1,
-        ClockTime = 14,
-        FogEnd = 100000
+     Ambient = Color3.fromRGB(40,20,60),
+OutdoorAmbient = Color3.fromRGB(30,10,50),
+
+ColorShift_Top = Color3.fromRGB(120,60,180),
+ColorShift_Bottom = Color3.fromRGB(60,20,120),
+
+Brightness = 0.8,
+ClockTime = 21,
     },
 
     ["Dark Storm"] = {
@@ -285,11 +301,14 @@ local SkyData = {
             Bk="rbxassetid://159248188",Dn="rbxassetid://159248183",Ft="rbxassetid://159248187",
             Lf="rbxassetid://159248173",Rt="rbxassetid://159248192",Up="rbxassetid://159248176"
         },
-      Ambient = Color3.fromRGB(120,120,120),
-      OutdoorAmbient = Color3.fromRGB(100,100,100),
-        Brightness = 0.8,
-        ClockTime = 14,
-        FogEnd = 100000
+     Ambient = Color3.fromRGB(20,35,20),
+OutdoorAmbient = Color3.fromRGB(10,25,10),
+
+ColorShift_Top = Color3.fromRGB(40,120,70),
+ColorShift_Bottom = Color3.fromRGB(20,60,40),
+
+Brightness = 0.7,
+ClockTime = 22,
     }
 }
 
@@ -310,7 +329,7 @@ end
 
 local function RemoveSkyEffects()
     for _,v in pairs(Lighting:GetChildren()) do
-        if v:IsA("Atmosphere") or v:IsA("Clouds") or v:IsA("BloomEffect") or v:IsA("SunRaysEffect") or v:IsA("ColorCorrectionEffect") then
+        if v:IsA("Clouds") then
             v:Destroy()
         end
     end
@@ -345,6 +364,8 @@ local function LockSky(name)
     Lighting.Ambient = D.Ambient
     Lighting.OutdoorAmbient = D.OutdoorAmbient
     Lighting.FogEnd = D.FogEnd
+    Lighting.ColorShift_Top = D.ColorShift_Top
+    Lighting.ColorShift_Bottom = D.ColorShift_Bottom
 
    Lighting.GlobalShadows = true
    Lighting.EnvironmentDiffuseScale = 0.25
@@ -400,6 +421,8 @@ local function ApplySkybox(name)
     Lighting.Brightness = D.Brightness
     Lighting.ClockTime = D.ClockTime
     Lighting.FogEnd = D.FogEnd
+    Lighting.ColorShift_Top = D.ColorShift_Top
+    Lighting.ColorShift_Bottom = D.ColorShift_Bottom
 end
 
 local function DisableSkybox()
