@@ -354,36 +354,41 @@ local function DisableSkybox()
 end
 
 task.spawn(function()
-    while task.wait(0.5) do
+    while task.wait(1.5) do
         pcall(function()
-            if getgenv().CurrentSkyName then
-                local D = SkyData[getgenv().CurrentSkyName]
-                if not D then return end
 
-                local s = GetLockedSky()
+            if not getgenv().CurrentSkyName then
+                return
+            end
 
-                -- Reaplicar skybox
+            local D = SkyData[getgenv().CurrentSkyName]
+            if not D then return end
+
+            local s = GetLockedSky()
+
+            -- SOLO si el juego cambió el sky
+            if s.SkyboxBk ~= D.Sky.Bk then
                 s.SkyboxBk = D.Sky.Bk
                 s.SkyboxDn = D.Sky.Dn
                 s.SkyboxFt = D.Sky.Ft
                 s.SkyboxLf = D.Sky.Lf
                 s.SkyboxRt = D.Sky.Rt
                 s.SkyboxUp = D.Sky.Up
-
-                -- BLOQUEAR iluminación
-                Lighting.ClockTime = D.ClockTime
-                Lighting.Brightness = D.Brightness
-                Lighting.Ambient = D.Ambient
-                Lighting.OutdoorAmbient = D.OutdoorAmbient
-                Lighting.FogEnd = D.FogEnd
-
-                -- Extras importantes
-                Lighting.GlobalShadows = false
-                Lighting.EnvironmentDiffuseScale = 0
-                Lighting.EnvironmentSpecularScale = 0
-                Lighting.ExposureCompensation = 0.3
-                Lighting.Technology = Enum.Technology.Compatibility
             end
+
+            -- Mantener iluminación
+            Lighting.ClockTime = 14
+            Lighting.Brightness = D.Brightness
+            Lighting.Ambient = D.Ambient
+            Lighting.OutdoorAmbient = D.OutdoorAmbient
+            Lighting.FogEnd = D.FogEnd
+
+            Lighting.GlobalShadows = false
+            Lighting.EnvironmentDiffuseScale = 0
+            Lighting.EnvironmentSpecularScale = 0
+            Lighting.ExposureCompensation = 0.3
+            Lighting.Technology = Enum.Technology.Compatibility
+
         end)
     end
 end)
