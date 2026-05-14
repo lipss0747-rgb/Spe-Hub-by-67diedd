@@ -264,7 +264,7 @@ local SkyData = {
     ClockTime = 17,
 
     FogEnd = 100000
-}
+},
 
     ["Deep Space"] = {
         Sky = {
@@ -311,7 +311,7 @@ ColorShift_Bottom = Color3.fromRGB(20,60,40),
 Brightness = 0.7,
 ClockTime = 22,
     }
-}
+},
 
 local function GetLockedSky()
     local s = Lighting:FindFirstChild("SPE_LOCKED_SKY")
