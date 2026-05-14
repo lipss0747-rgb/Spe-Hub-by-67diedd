@@ -349,6 +349,8 @@ local function LockSky(name)
     local D = SkyData[name]
     if not D then return end
 
+    getgenv().CurrentSkyName = name
+
     DisconnectSkyConnections()
 
     local s = GetLockedSky()
