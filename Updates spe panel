@@ -374,11 +374,13 @@ local function LockSky(name)
    Lighting.ExposureCompensation = 0
 
     -- BLOQUEAR cambios SIN loops
-    table.insert(SkyConnections,
-        Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
-            Lighting.ClockTime = 14
-        end)
-    )
+   table.insert(SkyConnections,
+    Lighting:GetPropertyChangedSignal("ClockTime"):Connect(function()
+        if math.abs(Lighting.ClockTime - D.ClockTime) > 0.1 then
+            Lighting.ClockTime = D.ClockTime
+        end
+    end)
+)
 
     table.insert(SkyConnections,
         Lighting:GetPropertyChangedSignal("Brightness"):Connect(function()
@@ -493,7 +495,7 @@ VisualTab:CreateButton({
         if getgenv().CurrentSkyName == "Crimson Doom" then
             DisableSkybox()
         else
-            ApplySkybox("Crimson Doom")
+            LockSky("Crimson Doom")
         end
     end
 })
@@ -504,7 +506,7 @@ VisualTab:CreateButton({
         if getgenv().CurrentSkyName == "Deep Space" then
             DisableSkybox()
         else
-            ApplySkybox("Deep Space")
+           LockSky("Deep Space")
         end
     end
 })
@@ -515,7 +517,7 @@ VisualTab:CreateButton({
         if getgenv().CurrentSkyName == "Violet Galaxy" then
             DisableSkybox()
         else
-            ApplySkybox("Violet Galaxy")
+            LockSky("Violet Galaxy")
         end
     end
 })
@@ -526,7 +528,7 @@ VisualTab:CreateButton({
         if getgenv().CurrentSkyName == "Dark Storm" then
             DisableSkybox()
         else
-            ApplySkybox("Dark Storm")
+            LockSky("Dark Storm")
         end
     end
 })
